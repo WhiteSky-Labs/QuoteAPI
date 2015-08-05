@@ -1,0 +1,223 @@
+<metadata__catalog__entry>
+  <version>5.2.0.0</version>
+  <types class="tree-map">
+    <entry>
+      <org.mule.common.metadata.DefaultMetaDataKey>
+        <id>GetQuote</id>
+        <displayName>GetQuote</displayName>
+        <category>DEFAULT</category>
+        <metaDataKeyPropertiesManager>
+          <properties>
+            <org.mule.common.metadata.key.property.dsql.DsqlFromMetaDataKeyProperty/>
+          </properties>
+        </metaDataKeyPropertiesManager>
+      </org.mule.common.metadata.DefaultMetaDataKey>
+      <org.mule.common.metadata.DefaultXmlMetaDataModel>
+        <dataType>XML</dataType>
+        <metaDataModelPropertiesManager>
+          <properties>
+            <org.mule.common.metadata.property.TextBasedExampleMetaDataModelProperty/>
+            <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty/>
+          </properties>
+        </metaDataModelPropertiesManager>
+        <fields/>
+        <rootElement>
+          <namespaceURI>http://swanandmokashi.com</namespaceURI>
+          <localPart>GetQuote</localPart>
+          <prefix>ns0</prefix>
+        </rootElement>
+        <schemas class="org.mule.common.metadata.StringBasedSchemaProvider">
+          <schemas>
+            <string>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;s:schema xmlns:s=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:http=&quot;http://schemas.xmlsoap.org/wsdl/http/&quot; xmlns:mime=&quot;http://schemas.xmlsoap.org/wsdl/mime/&quot; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot; xmlns:soap12=&quot;http://schemas.xmlsoap.org/wsdl/soap12/&quot; xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot; xmlns:tm=&quot;http://microsoft.com/wsdl/mime/textMatching/&quot; xmlns:tns=&quot;http://swanandmokashi.com&quot; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot; elementFormDefault=&quot;qualified&quot; targetNamespace=&quot;http://swanandmokashi.com&quot;&gt;
+      &lt;s:element name=&quot;GetQuote&quot;&gt;
+        &lt;s:complexType/&gt;
+      &lt;/s:element&gt;
+      &lt;s:element name=&quot;GetQuoteResponse&quot;&gt;
+        &lt;s:complexType&gt;
+          &lt;s:sequence&gt;
+            &lt;s:element maxOccurs=&quot;1&quot; minOccurs=&quot;1&quot; name=&quot;GetQuoteResult&quot; type=&quot;tns:Quotes&quot;/&gt;
+          &lt;/s:sequence&gt;
+        &lt;/s:complexType&gt;
+      &lt;/s:element&gt;
+      &lt;s:complexType name=&quot;Quotes&quot;&gt;
+        &lt;s:sequence&gt;
+          &lt;s:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;QuoteOfTheDay&quot; type=&quot;s:string&quot;/&gt;
+          &lt;s:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;Author&quot; type=&quot;s:string&quot;/&gt;
+        &lt;/s:sequence&gt;
+      &lt;/s:complexType&gt;
+      &lt;s:element name=&quot;Quotes&quot; type=&quot;tns:Quotes&quot;/&gt;
+    &lt;/s:schema&gt;</string>
+          </schemas>
+          <encoding>UTF-8</encoding>
+          <baseUri>file:/work/workspaces/mirikea/quoteapi/src/main/resources/wsdl/SwanAndMokashiBusinessService.wsdl</baseUri>
+        </schemas>
+        <namespaceManager>
+          <namespacePrefix>
+            <entry>
+              <string>http://swanandmokashi.com</string>
+              <string>ns0</string>
+            </entry>
+          </namespacePrefix>
+        </namespaceManager>
+      </org.mule.common.metadata.DefaultXmlMetaDataModel>
+    </entry>
+    <entry>
+      <org.mule.common.metadata.DefaultMetaDataKey>
+        <id>GetQuoteResponse</id>
+        <displayName>GetQuoteResponse</displayName>
+        <category>DEFAULT</category>
+        <metaDataKeyPropertiesManager>
+          <properties>
+            <org.mule.common.metadata.key.property.dsql.DsqlFromMetaDataKeyProperty/>
+          </properties>
+        </metaDataKeyPropertiesManager>
+      </org.mule.common.metadata.DefaultMetaDataKey>
+      <org.mule.common.metadata.DefaultXmlMetaDataModel>
+        <dataType>XML</dataType>
+        <metaDataModelPropertiesManager>
+          <properties>
+            <org.mule.common.metadata.property.TextBasedExampleMetaDataModelProperty/>
+            <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty/>
+          </properties>
+        </metaDataModelPropertiesManager>
+        <fields>
+          <org.mule.common.metadata.DefaultMetaDataField>
+            <name>ns0:GetQuoteResult</name>
+            <model class="org.mule.common.metadata.DefaultXmlMetaDataModel">
+              <dataType>XML</dataType>
+              <metaDataModelPropertiesManager>
+                <properties>
+                  <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                    <typeQName>
+                      <namespaceURI>http://swanandmokashi.com</namespaceURI>
+                      <localPart>Quotes</localPart>
+                      <prefix></prefix>
+                    </typeQName>
+                  </org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                </properties>
+              </metaDataModelPropertiesManager>
+              <fields>
+                <org.mule.common.metadata.DefaultMetaDataField>
+                  <name>ns0:QuoteOfTheDay</name>
+                  <model class="org.mule.common.metadata.DefaultSimpleMetaDataModel">
+                    <dataType>STRING</dataType>
+                    <metaDataModelPropertiesManager>
+                      <properties>
+                        <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                          <typeQName>
+                            <namespaceURI>http://www.w3.org/2001/XMLSchema</namespaceURI>
+                            <localPart>string</localPart>
+                            <prefix></prefix>
+                          </typeQName>
+                        </org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                      </properties>
+                    </metaDataModelPropertiesManager>
+                  </model>
+                  <accessType>READ_WRITE</accessType>
+                  <metaDataFieldPropertyManager>
+                    <properties>
+                      <org.mule.common.metadata.property.QNameMetaDataProperty>
+                        <name>
+                          <namespaceURI>http://swanandmokashi.com</namespaceURI>
+                          <localPart>QuoteOfTheDay</localPart>
+                          <prefix>ns0</prefix>
+                        </name>
+                      </org.mule.common.metadata.property.QNameMetaDataProperty>
+                    </properties>
+                  </metaDataFieldPropertyManager>
+                </org.mule.common.metadata.DefaultMetaDataField>
+                <org.mule.common.metadata.DefaultMetaDataField>
+                  <name>ns0:Author</name>
+                  <model class="org.mule.common.metadata.DefaultSimpleMetaDataModel">
+                    <dataType>STRING</dataType>
+                    <metaDataModelPropertiesManager>
+                      <properties>
+                        <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                          <typeQName reference="../../../../../../org.mule.common.metadata.DefaultMetaDataField/model/metaDataModelPropertiesManager/properties/org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty/typeQName"/>
+                        </org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                      </properties>
+                    </metaDataModelPropertiesManager>
+                  </model>
+                  <accessType>READ_WRITE</accessType>
+                  <metaDataFieldPropertyManager>
+                    <properties>
+                      <org.mule.common.metadata.property.QNameMetaDataProperty>
+                        <name>
+                          <namespaceURI>http://swanandmokashi.com</namespaceURI>
+                          <localPart>Author</localPart>
+                          <prefix>ns0</prefix>
+                        </name>
+                      </org.mule.common.metadata.property.QNameMetaDataProperty>
+                    </properties>
+                  </metaDataFieldPropertyManager>
+                </org.mule.common.metadata.DefaultMetaDataField>
+              </fields>
+              <rootElement>
+                <namespaceURI>http://swanandmokashi.com</namespaceURI>
+                <localPart>GetQuoteResponse</localPart>
+                <prefix>ns0</prefix>
+              </rootElement>
+              <schemas class="org.mule.common.metadata.StringBasedSchemaProvider">
+                <schemas>
+                  <string>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;s:schema xmlns:s=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:http=&quot;http://schemas.xmlsoap.org/wsdl/http/&quot; xmlns:mime=&quot;http://schemas.xmlsoap.org/wsdl/mime/&quot; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot; xmlns:soap12=&quot;http://schemas.xmlsoap.org/wsdl/soap12/&quot; xmlns:soapenc=&quot;http://schemas.xmlsoap.org/soap/encoding/&quot; xmlns:tm=&quot;http://microsoft.com/wsdl/mime/textMatching/&quot; xmlns:tns=&quot;http://swanandmokashi.com&quot; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot; elementFormDefault=&quot;qualified&quot; targetNamespace=&quot;http://swanandmokashi.com&quot;&gt;
+      &lt;s:element name=&quot;GetQuote&quot;&gt;
+        &lt;s:complexType/&gt;
+      &lt;/s:element&gt;
+      &lt;s:element name=&quot;GetQuoteResponse&quot;&gt;
+        &lt;s:complexType&gt;
+          &lt;s:sequence&gt;
+            &lt;s:element maxOccurs=&quot;1&quot; minOccurs=&quot;1&quot; name=&quot;GetQuoteResult&quot; type=&quot;tns:Quotes&quot;/&gt;
+          &lt;/s:sequence&gt;
+        &lt;/s:complexType&gt;
+      &lt;/s:element&gt;
+      &lt;s:complexType name=&quot;Quotes&quot;&gt;
+        &lt;s:sequence&gt;
+          &lt;s:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;QuoteOfTheDay&quot; type=&quot;s:string&quot;/&gt;
+          &lt;s:element maxOccurs=&quot;1&quot; minOccurs=&quot;0&quot; name=&quot;Author&quot; type=&quot;s:string&quot;/&gt;
+        &lt;/s:sequence&gt;
+      &lt;/s:complexType&gt;
+      &lt;s:element name=&quot;Quotes&quot; type=&quot;tns:Quotes&quot;/&gt;
+    &lt;/s:schema&gt;</string>
+                </schemas>
+                <encoding reference="../../../../../../../entry/org.mule.common.metadata.DefaultXmlMetaDataModel/schemas/encoding"/>
+                <baseUri>file:/work/workspaces/mirikea/quoteapi/src/main/resources/wsdl/SwanAndMokashiBusinessService.wsdl</baseUri>
+              </schemas>
+              <namespaceManager>
+                <namespacePrefix>
+                  <entry>
+                    <string>http://swanandmokashi.com</string>
+                    <string>ns0</string>
+                  </entry>
+                </namespacePrefix>
+              </namespaceManager>
+            </model>
+            <accessType>READ_WRITE</accessType>
+            <metaDataFieldPropertyManager>
+              <properties>
+                <org.mule.common.metadata.property.QNameMetaDataProperty>
+                  <name>
+                    <namespaceURI>http://swanandmokashi.com</namespaceURI>
+                    <localPart>GetQuoteResult</localPart>
+                    <prefix>ns0</prefix>
+                  </name>
+                </org.mule.common.metadata.property.QNameMetaDataProperty>
+              </properties>
+            </metaDataFieldPropertyManager>
+          </org.mule.common.metadata.DefaultMetaDataField>
+        </fields>
+        <rootElement>
+          <namespaceURI>http://swanandmokashi.com</namespaceURI>
+          <localPart>GetQuoteResponse</localPart>
+          <prefix>ns0</prefix>
+        </rootElement>
+        <schemas class="org.mule.common.metadata.StringBasedSchemaProvider">
+          <schemas reference="../../fields/org.mule.common.metadata.DefaultMetaDataField/model/schemas/schemas"/>
+          <encoding reference="../../../../entry/org.mule.common.metadata.DefaultXmlMetaDataModel/schemas/encoding"/>
+          <baseUri>file:/work/workspaces/mirikea/quoteapi/src/main/resources/wsdl/SwanAndMokashiBusinessService.wsdl</baseUri>
+        </schemas>
+        <namespaceManager reference="../fields/org.mule.common.metadata.DefaultMetaDataField/model/namespaceManager"/>
+      </org.mule.common.metadata.DefaultXmlMetaDataModel>
+    </entry>
+  </types>
+  <connectorName>SwanAndMokashiServiceConfiguration</connectorName>
+</metadata__catalog__entry>

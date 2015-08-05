@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+    <http:request-config name="HTTP_Request_Configuration" host="http://localhost" port="8081" basePath="/api" doc:name="HTTP Request Configuration"/>
+    <vm:connector name="QuoteVM" validateConnections="true" doc:name="VM">
+        <vm:queue-profile>
+            <default-in-memory-queue-store/>
+        </vm:queue-profile>
+    </vm:connector>
+    <flow name="schedulerFlow">
+        <poll doc:name="Poll">
+            <fixed-frequency-scheduler frequency="10000000"/>
+            <flow-ref name="daily-quote-file-generatorFlow" doc:name="daily-quote-file-generatorFlow"/>
+        </poll>
+        <logger message="#['TEST LANG : ' + payload]" level="INFO" doc:name="Logger"/>
+    </flow>
+    <flow name="translateFlow">
+        <vm:inbound-endpoint exchange-pattern="request-response" path="vm.quote.translate" connector-ref="QuoteVM" doc:name="VM Quote Translate">
+            <vm:transaction action="NONE"/>
+        </vm:inbound-endpoint>
+        <dw:transform-message doc:name="Assign Target Languages Variable">
+            <dw:set-variable variableName="targetLanguages"><![CDATA[%dw 1.0
+%output application/java
+---
+p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
+        </dw:transform-message>
+        <dw:transform-message doc:name="Transform Response to Translate Request">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	"quotes":  flowVars.targetLanguages map {
+	  "quote": {
+			"author": payload.quote.author,
+			"quotetext": payload.quote.quotetext
+		},
+		"activity": 'translate',
+		"translation":
+		{
+			"source": p('quoteapi.dailyquote.language.source'),
+			"target": $
+		}
+	}
+}
+]]></dw:set-payload>
+        </dw:transform-message>
+        <dw:transform-message doc:name="Translate">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+{
+	"quote": payload.quotes[0].quote,
+	"translations": payload.quotes map {
+		"language": $.translation.target,
+		(lookup("put:/quotes:application/json:quoteapi-config",$) map {"translatedText":$})
+	}
+}]]></dw:set-payload>
+        </dw:transform-message>
+    </flow>
+    <flow name="fileGenerationFlow">
+        <vm:inbound-endpoint exchange-pattern="request-response" path="vm.quote.file" connector-ref="QuoteVM" doc:name="VM Quote File">
+            <vm:transaction action="NONE"/>
+        </vm:inbound-endpoint>
+        <dw:transform-message doc:name="Prepare Request for Generation of FIle having the Original Quote">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+%var timestamp = now as :localdatetime
+---
+{
+  "filename": p('quoteapi.dailyquote.filename.prefix') ++ sessionVars.transactionTimestamp ++ p('quoteapi.dailyquote.filename.ext'),
+  "action": "create",
+  "text": "$timestamp | $(payload.quote.quotetext) - $(payload.quote.author)"
+}
+]]></dw:set-payload>
+        </dw:transform-message>
+        <flow-ref name="post:/quotes/file:application/json:quoteapi-config" doc:name="post:/quotes/file:application/json:quoteapi-config"/>
+    </flow>
+    <flow name="daily-quote-file-generatorFlow">
+        <http:listener config-ref="quoteapi-httpListenerConfig" path="/" doc:name="HTTP">
+            <http:response-builder>
+                <http:header headerName="Content-Type" value="application/json"/>
+            </http:response-builder>
+        </http:listener>
+        <set-session-variable variableName="transactionTimestamp" value="#[server.dateTime.toDate().getTime() / 1000]" doc:name="Session Timestamp"/>
+        <dw:transform-message doc:name="Get Quote of The Day Request  Payload">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/xml
+%namespace ns0 http://swanandmokashi.com
+---
+{
+	ns0#GetQuote: {
+	}
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <flow-ref name="get:/quotes/day:quoteapi-config" doc:name="Invoke Get Quote of The Day Flow"/>
+        <set-variable variableName="quoteOfTheDay" value="#[payload]" doc:name="Assign Quote of The Day"/>
+        <vm:outbound-endpoint exchange-pattern="request-response" path="vm.quote.file" connector-ref="QuoteVM" doc:name="Send Quote to VM Quote File">
+            <vm:transaction action="NONE"/>
+        </vm:outbound-endpoint>
+        <dw:transform-message doc:name="Set Request for Translation">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"quote": flowVars.quoteOfTheDay.quote
+}]]></dw:set-payload>
+        </dw:transform-message>
+        <vm:outbound-endpoint exchange-pattern="request-response" path="vm.quote.translate" connector-ref="QuoteVM" doc:name="Send Request to VM Quote Translate">
+            <vm:transaction action="NONE"/>
+        </vm:outbound-endpoint>
+    </flow>
+</mule>

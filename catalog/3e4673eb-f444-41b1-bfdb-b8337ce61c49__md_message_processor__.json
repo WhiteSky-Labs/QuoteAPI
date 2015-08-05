@@ -1,0 +1,11 @@
+{
+    "inputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "SwanAndMokashiServiceConfiguration",
+            "typeId": "GetQuoteResponse"
+        }
+    },
+    "outputMessageMetadata": {},
+    "id": "3e4673eb-f444-41b1-bfdb-b8337ce61c49",
+    "version": "5.2.0.0"
+}

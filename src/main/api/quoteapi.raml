@@ -1,0 +1,202 @@
+#%RAML 0.8
+baseUri: http://quoteapi.cloudhub.io/api
+title: Quote API
+version: 1.0.0-SNAPSHOT
+/quotes:
+  put: 
+    description: Translate/Compress/Decompress Quotes
+    body:
+      application/json:
+        example: | 
+          {
+            "quote": {
+              "author": "Anonymous",
+              "quotetext": "I believe I can fly, I believe I can touch the sky."
+            },
+            "activity": "translate",
+            "translation": {
+              "source": "en",
+              "target": "tl"
+            },
+            "compression": {
+              "key": " ",
+              "keyIndexes" : [1,5]
+            }
+          }
+        schema: | 
+          {
+            "type": "object",
+            "$schema": "http://json-schema.org/draft-03/schema",
+            "id": "http://jsonschema.net",
+            "required": true,
+            "properties": {
+              "quote": {
+                "type": "object",
+                "$schema": "http://json-schema.org/draft-03/schema",
+                "id": "http://jsonschema.net/quote",
+                "required": true,
+                "properties": {
+                  "quotetext": {
+                    "type": "string",
+                    "id": "http://jsonschema.net/quotetext",
+                    "required": true
+                  },
+                  "author": {
+                    "type": "string",
+                    "id": "http://jsonschema.net/author",
+                    "required": false
+                  }
+                }
+              },
+              "activity": {
+                "type": "string",
+                "id": "http://jsonschema.net/activity",
+                "required": true
+              },
+              "translation": {
+                "type": "object",
+                "$schema": "http://json-schema.org/draft-03/schema",
+                "id": "http://jsonschema.net/translation",
+                "required": false,
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "id": "http://jsonschema.net/source",
+                    "required": true
+                  },
+                  "target": {
+                    "type": "string",
+                    "id": "http://jsonschema.net/target",
+                    "required": true
+                  }
+                }
+              },
+              "compression": {
+                "type": "object",
+                "$schema": "http://json-schema.org/draft-03/schema",
+                "id": "http://jsonschema.net/compression",
+                "required": false,
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "id": "http://jsonschema.net/key",
+                    "required": true
+                  },
+                  "keyIndexes": {
+                  "type": "array",
+                  "items": {
+                  "type": "integer"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                  }
+                }
+              }
+            }
+          }
+    responses:
+      200:
+        body:
+          application/json:
+            example: |
+              {
+                "quote": {
+                  "author": "Anonymous",
+                  "quoteText": "IbelieveIcanfly,IbelieveIcantouchthesky."
+                },
+                "quoteEntities": [
+                  {
+                    "name": "compressedFlag",
+                    "type": null,
+                    "value": "true"
+                  },
+                  {
+                    "name": "key",
+                    "type": null,
+                    "value": " "
+                  },
+                  {
+                    "name": "keyIndexes",
+                    "type": null,
+                    "value": "[1,9,11,15,20,22,30,32,36,42,46]"
+                  }
+                ],
+                "errorInfo": null
+              }
+      500:
+        body:
+          application/json:
+            example: |
+              {
+                "errorMessage": "Problem occured while processing the request."
+              }
+  /day:
+    get:
+      description: Gets the quote of the day.
+      responses:
+        200:
+          body:
+            application/json:
+              example: | 
+                {
+                  "author": "Anonymous",
+                  "quotetext": "I believe I can fly, I believe I can touch the sky."
+                }
+        500:
+          body:
+            application/json:
+              example: |
+                {
+                  "errorMessage": "The is a problem getting the quote of the day."
+                }
+  /file:
+    post:
+      description: create or update file.
+      body:
+        application/json:
+          example: | 
+            {
+              "filename": "Quote_123456789.txt",
+              "action": "create",
+              "text": "I believe I can fly, I believe I can touch the sky."
+            }
+          schema: |
+            {
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "id": "http://jsonschema.net",
+              "type": "object",
+              "properties": {
+                "filename": {
+                  "id": "http://jsonschema.net/filename",
+                  "type": "string"
+                },
+                "action": {
+                  "id": "http://jsonschema.net/action",
+                  "type": "string"
+                },
+                "text": {
+                  "id": "http://jsonschema.net/text",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "filename",
+                "action"
+              ]
+            }
+      responses:
+        200:
+          body:
+            application/json:
+              example: | 
+                {
+                  "filename": "Quote_123456789.txt",
+                  "response": "Quote file has been created/updated.",
+                }
+        500:
+          body:
+            application/json:
+              example: |
+                {
+                  "errorMessage": "Problem occured while processing the request."
+                }

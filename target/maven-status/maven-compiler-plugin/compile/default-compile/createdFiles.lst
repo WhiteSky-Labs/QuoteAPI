@@ -1,0 +1,9 @@
+com/whiteskylabs/quoteapi/model/QuoteActivityInfo.class
+com/whiteskylabs/quoteapi/util/Constants.class
+com/whiteskylabs/quoteapi/model/QuoteActivityResponse.class
+com/whiteskylabs/quoteapi/model/EntityInfo.class
+com/whiteskylabs/quoteapi/model/Quote.class
+com/whiteskylabs/quoteapi/service/QuoteService.class
+com/whiteskylabs/quoteapi/util/DataTransformer.class
+com/whiteskylabs/quoteapi/service/impl/QuoteServiceImpl.class
+com/whiteskylabs/quoteapi/model/ErrorInfo.class

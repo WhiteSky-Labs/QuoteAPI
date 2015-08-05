@@ -1,0 +1,11 @@
+{
+    "inputMessageMetadata": {},
+    "outputMessageMetadata": {
+        "messagePayload": {
+            "connectorName": "#_custom_mule_metadata_type_#",
+            "typeId": "QuoteActivityResponse"
+        }
+    },
+    "id": "d3a506b4-d413-4fd2-9d00-3b85a7167c8d",
+    "version": "5.2.0.0"
+}
