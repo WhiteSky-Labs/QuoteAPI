@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -9,7 +9,8 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
-http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd">
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
     <http:request-config name="HTTP_Request_Configuration" host="http://localhost" port="8081" basePath="/api" doc:name="HTTP Request Configuration"/>
     <vm:connector name="QuoteVM" validateConnections="true" doc:name="VM">
         <vm:queue-profile>
@@ -55,7 +56,7 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
         </dw:transform-message>
         <dw:transform-message doc:name="Translate">
             <dw:set-payload><![CDATA[%dw 1.0
-%output application/java
+%output application/json
 ---
 {
 	"quote": payload.quotes[0].quote,
@@ -65,6 +66,7 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
 	}
 }]]></dw:set-payload>
         </dw:transform-message>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
     </flow>
     <flow name="fileGenerationFlow">
         <vm:inbound-endpoint exchange-pattern="request-response" path="vm.quote.file" connector-ref="QuoteVM" doc:name="VM Quote File">
@@ -111,7 +113,10 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
 %output application/json
 ---
 {
-	"quote": flowVars.quoteOfTheDay.quote
+	"quote": {
+		"author": flowVars.quoteOfTheDay.quote.author,
+		"quotetext": flowVars.quoteOfTheDay.quote.quotetext
+	}
 }]]></dw:set-payload>
         </dw:transform-message>
         <vm:outbound-endpoint exchange-pattern="request-response" path="vm.quote.translate" connector-ref="QuoteVM" doc:name="Send Request to VM Quote Translate">
