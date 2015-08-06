@@ -123,6 +123,7 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
         </dw:transform-message>
         <logger message="#[payload]" level="INFO" doc:name="Logger"/>
     </flow>
+    
     <flow name="daily-quote-file-generatorFlow">
         <http:listener config-ref="quoteapi-httpListenerConfig" path="/" doc:name="HTTP">
             <http:response-builder>
