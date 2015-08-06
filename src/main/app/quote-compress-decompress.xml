@@ -44,5 +44,6 @@ QuoteServiceImpl impl = new QuoteServiceImpl();
 payload = impl.performQuoteActivity(quoteActivityInfo);
 ]]></expression-component>
         <json:object-to-json-transformer doc:name="Transform Quote Activity Response to JSON"/>
+
 	</flow>
 </mule>

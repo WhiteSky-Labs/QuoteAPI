@@ -63,9 +63,9 @@ lower payload.activity]]></dw:set-variable>
     <flow name="get:/quotes/day:quoteapi-config">
         <ws:consumer config-ref="SwanAndMokashiServiceConfiguration" operation="GetQuote" doc:name="Get Quote Web Service" />
         <json:xml-to-json-transformer doc:name="XML to JSON" />
-        <dw:transform-message doc:name="Transform Quote">
+        <dw:transform-message doc:name="Create Quote">
             <dw:set-payload><![CDATA[%dw 1.0
-%output application/java
+%output application/json
 %namespace ns0 http://swanandmokashi.com
 ---
 {
