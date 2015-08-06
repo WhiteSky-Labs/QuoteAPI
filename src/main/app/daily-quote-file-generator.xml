@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:schedulers="http://www.mulesoft.org/schema/mule/schedulers" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
@@ -11,7 +11,8 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
 http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
 http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
-http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd">
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/schedulers http://www.mulesoft.org/schema/mule/schedulers/current/mule-schedulers.xsd">
     <http:request-config name="HTTP_Request_Configuration" host="http://localhost" port="8081" basePath="/api" doc:name="HTTP Request Configuration"/>
     <vm:connector name="QuoteVM" validateConnections="true" doc:name="VM">
         <vm:queue-profile>
@@ -19,9 +20,11 @@ http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/
         </vm:queue-profile>
     </vm:connector>
     <flow name="schedulerFlow">
-        <poll doc:name="Poll">
-            <fixed-frequency-scheduler frequency="10000000" startDelay="10000000"/>
-            <flow-ref name="daily-quote-file-generatorFlow" doc:name="daily-quote-file-generatorFlow"/>
+        <poll doc:name="Daily Schedule @ 10 AM">
+            <schedulers:cron-scheduler expression="0 0 10 * * ?"/>
+            <vm:outbound-endpoint exchange-pattern="request-response" path="quote.file.generator.trigger" connector-ref="QuoteVM" doc:name="VM">
+                <vm:transaction action="NONE"/>
+            </vm:outbound-endpoint>
         </poll>
         <logger message="#['TEST LANG : ' + payload]" level="INFO" doc:name="Logger"/>
     </flow>
@@ -86,7 +89,6 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
 ]]></dw:set-payload>
         </dw:transform-message>
         <flow-ref name="post:/quotes/file:application/json:quoteapi-config" doc:name="Invoke File Create"/>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
     </flow>
     <flow name="compressFlow">
         <vm:inbound-endpoint exchange-pattern="request-response" path="vm.quote.compress" connector-ref="QuoteVM" doc:name="VM Compress"/>
@@ -125,11 +127,12 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
     </flow>
     
     <flow name="daily-quote-file-generatorFlow">
-        <http:listener config-ref="quoteapi-httpListenerConfig" path="/" doc:name="HTTP">
-            <http:response-builder>
-                <http:header headerName="Content-Type" value="application/json"/>
-            </http:response-builder>
-        </http:listener>
+        <composite-source doc:name="Composite Source">
+            <http:listener config-ref="quoteapi-httpListenerConfig" path="/" doc:name="HTTP"/>
+            <vm:inbound-endpoint exchange-pattern="request-response" path="quote.file.generator.trigger" connector-ref="QuoteVM" doc:name="VM Trigger">
+                <vm:transaction action="NONE"/>
+            </vm:inbound-endpoint>
+        </composite-source>
         <set-session-variable variableName="transactionTimestamp" value="#[server.dateTime.toDate().getTime() / 1000]" doc:name="Session Timestamp"/>
         <dw:transform-message doc:name="Get Quote of The Day Request  Payload">
             <dw:set-payload><![CDATA[%dw 1.0
@@ -173,7 +176,7 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
         </vm:outbound-endpoint>
         <dw:transform-message doc:name="Send to JMS Topic">
             <dw:set-payload><![CDATA[%dw 1.0
-%output application/json
+%output application/java
 ---
 {
 	"jms-quotes": payload.compressed map {
@@ -189,6 +192,12 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
 }
 	
 ]]></dw:set-payload>
+        </dw:transform-message>
+        <dw:transform-message doc:name="JSON Response">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+payload]]></dw:set-payload>
         </dw:transform-message>
     </flow>
 </mule>

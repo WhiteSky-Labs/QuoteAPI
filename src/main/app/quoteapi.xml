@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd" version="EE-3.7.0">
     <http:listener-config name="quoteapi-httpListenerConfig" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration" />
-    <apikit:config name="quoteapi-config" raml="quoteapi.raml" consoleEnabled="true" consolePath="console" doc:name="Router" />
+    <apikit:config name="quoteapi-config" raml="quoteapi.raml" consoleEnabled="false" consolePath="console" doc:name="Router" />
     <ws:consumer-config name="SwanAndMokashiServiceConfiguration" wsdlLocation="wsdl/SwanAndMokashiBusinessService.wsdl" service="QuoteofTheDay" port="QuoteofTheDaySoap12" serviceAddress="http://www.swanandmokashi.com/Homepage/Webservices/QuoteOfTheDay.asmx" doc:name="Web Service Consumer" />
     <file:connector name="DailyQuoteFileRepository" autoDelete="false" outputAppend="true" streaming="true" validateConnections="true" doc:name="File" />
     <flow name="quoteapi-main">
@@ -92,7 +92,7 @@ payload.text ++ p('line.separator')
 ]]></dw:set-payload>
         </dw:transform-message>
         <file:outbound-endpoint path="${quoteapi.dailyquoterepo.path}" outputPattern="#[flowVars.filename]" connector-ref="DailyQuoteFileRepository" responseTimeout="10000" doc:name="Create/Update File"/>
-        <set-payload value="#[flowVars.filename]" doc:name="Set Payload"/>
+        <set-payload value="#[flowVars.filename]" doc:name="Assign Filename To Payload"/>
         <dw:transform-message doc:name="Create JSON Response">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/json
@@ -106,28 +106,58 @@ payload.text ++ p('line.separator')
     <apikit:mapping-exception-strategy name="quoteapi-apiKitGlobalExceptionMapping">
         <apikit:mapping statusCode="404">
             <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-            <set-payload value="{ &quot;error_message&quot;: &quot;Resource not found&quot; }" doc:name="Set Payload" />
+            <set-payload value="#[exception.message]" doc:name="Set Error Message"/>
+            <dw:transform-message doc:name="JSON Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{ "error_message": payload
+}]]></dw:set-payload>
+            </dw:transform-message>
         </apikit:mapping>
         <apikit:mapping statusCode="405">
             <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-            <set-payload value="{ &quot;error_message&quot;: &quot;Method not allowed&quot; }" doc:name="Set Payload" />
+            <set-payload value="#[exception.message]" doc:name="Set Error Message"/>
+            <dw:transform-message doc:name="JSON Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{ "error_message": payload
+}]]></dw:set-payload>
+            </dw:transform-message>
         </apikit:mapping>
         <apikit:mapping statusCode="415">
             <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-            <set-payload value="{ &quot;error_message&quot;: &quot;Unsupported media type&quot; }" doc:name="Set Payload" />
+            <set-payload value="#[exception.message]" doc:name="Set Error Message"/>
+            <dw:transform-message doc:name="JSON Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{ "error_message": payload
+}]]></dw:set-payload>
+            </dw:transform-message>
         </apikit:mapping>
         <apikit:mapping statusCode="406">
             <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-            <set-payload value="{ &quot;error_message&quot;: &quot;Not acceptable&quot; }" doc:name="Set Payload" />
+            <set-payload value="#[exception.message]" doc:name="Set Error Message"/>
+            <dw:transform-message doc:name="JSON Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{ "error_message": payload
+}]]></dw:set-payload>
+            </dw:transform-message>
         </apikit:mapping>
         <apikit:mapping statusCode="400">
             <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property" />
-            <set-payload value="{ &quot;error_message&quot;: &quot;There is something wrong with your request.&quot; }" doc:name="Set Payload" />
+            <set-payload value="#[exception.message]" doc:name="Set Error Message"/>
+            <dw:transform-message doc:name="JSON Response">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{ "error_message": payload
+}]]></dw:set-payload>
+            </dw:transform-message>
         </apikit:mapping>
     </apikit:mapping-exception-strategy>
 </mule>

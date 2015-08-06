@@ -33,7 +33,7 @@ payload]]></dw:set-payload>
         <jms:inbound-endpoint  topic="${quoteapi.translated.jms.activemq.topic}" connector-ref="QuoteActiveMQ" doc:name="Quote Active MQ">
             <jms:transaction action="NOT_SUPPORTED"/>
         </jms:inbound-endpoint>
-        <dw:transform-message doc:name="Transform Message">
+        <dw:transform-message doc:name="Assign Payload">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
@@ -48,7 +48,7 @@ payload]]></dw:set-payload>
             <vm:transaction action="NONE"/>
         </vm:inbound-endpoint>
         <set-variable variableName="filename" value="${quoteapi.dailyquote.filename.prefix}#[payload.quote.timestamp]${quoteapi.dailyquote.filename.ext}" doc:name="Assign Filename" mimeType="text/plain"/>
-        <dw:transform-message doc:name="Transform Message">
+        <dw:transform-message doc:name="Prepare Decompress Request">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
@@ -65,7 +65,7 @@ payload]]></dw:set-payload>
 }]]></dw:set-payload>
         </dw:transform-message>
         <flow-ref name="put:/quotes:application/json:quoteapi-config" doc:name="Invoke Quote Service to Decompress"/>
-        <dw:transform-message doc:name="Transform Message">
+        <dw:transform-message doc:name="Pass the Quote and Filename to File Append">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 ---
@@ -82,7 +82,7 @@ payload]]></dw:set-payload>
         <vm:inbound-endpoint exchange-pattern="request-response" path="jms.quote.file.append" connector-ref="QuoteVM" doc:name="VM File Append">
             <vm:transaction action="NONE"/>
         </vm:inbound-endpoint>
-        <dw:transform-message doc:name="Transform Message">
+        <dw:transform-message doc:name="Prepare Message to append in file">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
 %var timestamp = now as :localdatetime
@@ -94,6 +94,5 @@ payload]]></dw:set-payload>
 }]]></dw:set-payload>
         </dw:transform-message>
         <flow-ref name="post:/quotes/file:application/json:quoteapi-config" doc:name="Invoke File append"/>
-        <logger message="#['JMS Consumer : ' + payload]" level="INFO" doc:name="Logger"/>
     </flow>
 </mule>
