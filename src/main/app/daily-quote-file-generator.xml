@@ -26,7 +26,7 @@ http://www.mulesoft.org/schema/mule/schedulers http://www.mulesoft.org/schema/mu
                 <vm:transaction action="NONE"/>
             </vm:outbound-endpoint>
         </poll>
-        <logger message="#['TEST LANG : ' + payload]" level="INFO" doc:name="Logger"/>
+        <logger message="#['Quote Generation Triggered @ : ' + server.dateTime]" level="INFO" doc:name="Logger"/>
     </flow>
     <flow name="translateFlow">
         <vm:inbound-endpoint exchange-pattern="request-response" path="vm.quote.translate" connector-ref="QuoteVM" doc:name="VM Quote Translate">
@@ -70,7 +70,6 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
 	}
 }]]></dw:set-payload>
         </dw:transform-message>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
     </flow>
     <flow name="fileGenerationFlow">
         <vm:inbound-endpoint exchange-pattern="request-response" path="vm.quote.file" connector-ref="QuoteVM" doc:name="VM Quote File">
@@ -88,7 +87,7 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
 }
 ]]></dw:set-payload>
         </dw:transform-message>
-        <flow-ref name="post:/quotes/file:application/json:quoteapi-config" doc:name="Invoke File Create"/>
+        <flow-ref name="post:/quotes/file:application/json:quoteapi-config" doc:name="post:/quotes/file:application/json:quoteapi-config"/>
     </flow>
     <flow name="compressFlow">
         <vm:inbound-endpoint exchange-pattern="request-response" path="vm.quote.compress" connector-ref="QuoteVM" doc:name="VM Compress"/>
@@ -144,7 +143,7 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
 	}
 }]]></dw:set-payload>
         </dw:transform-message>
-        <flow-ref name="get:/quotes/day:quoteapi-config" doc:name="Invoke Get Quote of The Day"/>
+        <flow-ref name="get:/quotes/day:quoteapi-config" doc:name="get:/quotes/day:quoteapi-config"/>
         <dw:transform-message doc:name="Transform JSON to HashMap">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
@@ -179,7 +178,7 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
 %output application/java
 ---
 {
-	"jms-quotes": payload.compressed map {
+	"jmsQuotes": payload.compressed map {
 		"message": $.compression.quote,
 		"sendJMS": lookup('send-jms-messageFlow', {
 			"quote": {
@@ -193,11 +192,6 @@ p('quoteapi.dailyquote.language.targets') splitBy ","]]></dw:set-variable>
 	
 ]]></dw:set-payload>
         </dw:transform-message>
-        <dw:transform-message doc:name="JSON Response">
-            <dw:set-payload><![CDATA[%dw 1.0
-%output application/json
----
-payload]]></dw:set-payload>
-        </dw:transform-message>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
     </flow>
 </mule>

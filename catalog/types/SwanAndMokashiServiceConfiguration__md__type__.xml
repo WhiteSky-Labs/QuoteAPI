@@ -18,6 +18,19 @@
           <properties>
             <org.mule.common.metadata.property.TextBasedExampleMetaDataModelProperty/>
             <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty/>
+            <org.mule.common.metadata.property.StructureIdentifierMetaDataModelProperty>
+              <metaDataKey class="org.mule.common.metadata.DefaultMetaDataKey">
+                <id>GetQuote</id>
+                <displayName>GetQuote</displayName>
+                <category>DEFAULT</category>
+                <metaDataKeyPropertiesManager>
+                  <properties>
+                    <org.mule.common.metadata.key.property.dsql.DsqlFromMetaDataKeyProperty/>
+                  </properties>
+                </metaDataKeyPropertiesManager>
+              </metaDataKey>
+              <derivedStructure>false</derivedStructure>
+            </org.mule.common.metadata.property.StructureIdentifierMetaDataModelProperty>
           </properties>
         </metaDataModelPropertiesManager>
         <fields/>
@@ -49,7 +62,7 @@
     &lt;/s:schema&gt;</string>
           </schemas>
           <encoding>UTF-8</encoding>
-          <baseUri>file:/work/workspaces/mirikea/quoteapi/src/main/resources/wsdl/SwanAndMokashiBusinessService.wsdl</baseUri>
+          <baseUri>file:/work/workspaces/bryant/quoteapi/src/main/resources/wsdl/SwanAndMokashiBusinessService.wsdl</baseUri>
         </schemas>
         <namespaceManager>
           <namespacePrefix>
@@ -78,6 +91,19 @@
           <properties>
             <org.mule.common.metadata.property.TextBasedExampleMetaDataModelProperty/>
             <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty/>
+            <org.mule.common.metadata.property.StructureIdentifierMetaDataModelProperty>
+              <metaDataKey class="org.mule.common.metadata.DefaultMetaDataKey">
+                <id>GetQuoteResponse</id>
+                <displayName>GetQuoteResponse</displayName>
+                <category>DEFAULT</category>
+                <metaDataKeyPropertiesManager>
+                  <properties>
+                    <org.mule.common.metadata.key.property.dsql.DsqlFromMetaDataKeyProperty/>
+                  </properties>
+                </metaDataKeyPropertiesManager>
+              </metaDataKey>
+              <derivedStructure>false</derivedStructure>
+            </org.mule.common.metadata.property.StructureIdentifierMetaDataModelProperty>
           </properties>
         </metaDataModelPropertiesManager>
         <fields>
@@ -180,7 +206,7 @@
     &lt;/s:schema&gt;</string>
                 </schemas>
                 <encoding reference="../../../../../../../entry/org.mule.common.metadata.DefaultXmlMetaDataModel/schemas/encoding"/>
-                <baseUri>file:/work/workspaces/mirikea/quoteapi/src/main/resources/wsdl/SwanAndMokashiBusinessService.wsdl</baseUri>
+                <baseUri>file:/work/workspaces/bryant/quoteapi/src/main/resources/wsdl/SwanAndMokashiBusinessService.wsdl</baseUri>
               </schemas>
               <namespaceManager>
                 <namespacePrefix>
@@ -213,7 +239,7 @@
         <schemas class="org.mule.common.metadata.StringBasedSchemaProvider">
           <schemas reference="../../fields/org.mule.common.metadata.DefaultMetaDataField/model/schemas/schemas"/>
           <encoding reference="../../../../entry/org.mule.common.metadata.DefaultXmlMetaDataModel/schemas/encoding"/>
-          <baseUri>file:/work/workspaces/mirikea/quoteapi/src/main/resources/wsdl/SwanAndMokashiBusinessService.wsdl</baseUri>
+          <baseUri>file:/work/workspaces/bryant/quoteapi/src/main/resources/wsdl/SwanAndMokashiBusinessService.wsdl</baseUri>
         </schemas>
         <namespaceManager reference="../fields/org.mule.common.metadata.DefaultMetaDataField/model/namespaceManager"/>
       </org.mule.common.metadata.DefaultXmlMetaDataModel>

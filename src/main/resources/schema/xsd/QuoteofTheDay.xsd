@@ -1,0 +1,22 @@
+<xs:schema elementFormDefault="qualified" targetNamespace="http://swanandmokashi.com"
+	version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://swanandmokashi.com">
+	<xs:element name="GetQuote">
+		<xs:complexType>
+			<xs:sequence />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="GetQuoteResponse">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="GetQuoteResult" type="tns:Quotes" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Quotes" type="tns:Quotes" />
+	<xs:complexType name="Quotes">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="QuoteOfTheDay" type="xs:string" />
+			<xs:element minOccurs="0" name="Author" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.7.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd">
-    <http:request-config name="GoogleTranslateAPIConfiguration" protocol="HTTPS" host="${googleapi.translate.host}" port="${googleapi.translate.port}" basePath="${googleapi.translate.path}" doc:name="HTTP Request Configuration"/>
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <http:request-config name="GoogleTranslateAPIConfiguration"  host="${googleapi.translate.host}" port="${googleapi.translate.port}" basePath="${googleapi.translate.path}" doc:name="HTTP Request Configuration" protocol="HTTPS"/>
+    
     <flow name="translatorFlow">
         <http:request config-ref="GoogleTranslateAPIConfiguration" path="/" method="GET" doc:name="Invoke Google Translate API">
             <http:request-builder>
@@ -17,6 +20,7 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
                 <http:query-param paramName="q" value="#[payload.text]"/>
             </http:request-builder>
         </http:request>
+        <json:validate-schema schemaLocation="schema/jsons/googletranslate.json" doc:name="Validate JSON Schema"/>
         <dw:transform-message doc:name="Return Translated Text Only">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/json
@@ -25,5 +29,35 @@ http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee
 	"translatedText": payload.data.translations[0].translatedText
 }]]></dw:set-payload>
         </dw:transform-message>
+        <choice-exception-strategy doc:name="Choice Exception Strategy">
+            <catch-exception-strategy when="#[exception.causedBy(java.net.ConnectException)]" doc:name="Outbound Connection Exception">
+                <set-property propertyName="http.status" value="500" doc:name="Property"/>
+                <dw:transform-message doc:name="Transform Message">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"errorInfo": {
+		"errorCode": "101010",
+		"errorMessage": "OUTBOUND_CONNECTION_EXCEPTION: Service provider is unreachable."
+	}
+}]]></dw:set-payload>
+                </dw:transform-message>
+            </catch-exception-strategy>
+            <catch-exception-strategy when="#[exception.causedBy(org.mule.module.json.validation.JsonSchemaValidationException)]" doc:name="Schema Validation Exception">
+                <set-property propertyName="http.status" value="500" doc:name="Property"/>
+                <dw:transform-message doc:name="Transform Message">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+	"errorInfo": {
+		"errorCode": "202020",
+		"errorMessage": "SCHEMA_VALIDATION_EXCEPTION: not valid response."
+	}
+}]]></dw:set-payload>
+                </dw:transform-message>
+            </catch-exception-strategy>
+        </choice-exception-strategy>
     </flow>
 </mule>

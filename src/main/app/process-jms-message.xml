@@ -64,7 +64,7 @@ payload]]></dw:set-payload>
   }
 }]]></dw:set-payload>
         </dw:transform-message>
-        <flow-ref name="put:/quotes:application/json:quoteapi-config" doc:name="Invoke Quote Service to Decompress"/>
+        <flow-ref name="put:/quotes:application/json:quoteapi-config" doc:name="put:/quotes:application/json:quoteapi-config"/>
         <dw:transform-message doc:name="Pass the Quote and Filename to File Append">
             <dw:set-payload><![CDATA[%dw 1.0
 %output application/java
@@ -93,6 +93,6 @@ payload]]></dw:set-payload>
   "text": "$timestamp | $(payload.quote.quoteText)"
 }]]></dw:set-payload>
         </dw:transform-message>
-        <flow-ref name="post:/quotes/file:application/json:quoteapi-config" doc:name="Invoke File append"/>
+        <flow-ref name="post:/quotes/file:application/json:quoteapi-config" doc:name="post:/quotes/file:application/json:quoteapi-config"/>
     </flow>
 </mule>
