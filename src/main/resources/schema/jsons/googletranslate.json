@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "http://jsonschema.net",
+  "type": "object",
+  "properties": {
+    "data": {
+      "id": "http://jsonschema.net/data",
+      "type": "object",
+      "properties": {
+        "translations": {
+          "id": "http://jsonschema.net/data/translations",
+          "type": "array",
+          "items": {
+            "id": "http://jsonschema.net/data/translations/0",
+            "type": "object",
+            "properties": {
+              "translatedText": {
+                "id": "http://jsonschema.net/data/translations/0/translatedText",
+                "type": "string"
+              }
+            },
+            "required": [
+              "translatedText"
+            ]
+          },
+          "required": [
+            "0"
+          ]
+        }
+      },
+      "required": [
+        "translations"
+      ]
+    }
+  },
+  "required": [
+    "data"
+  ]
+}
