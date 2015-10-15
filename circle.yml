@@ -3,4 +3,4 @@ machine:
   
 test:
   post:
-    - mvn clean test  
+    - mvn clean  
