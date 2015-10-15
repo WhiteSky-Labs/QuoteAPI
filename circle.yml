@@ -1,5 +1,6 @@
 dependencies:
-  override: mvn -s settings.xml dependency:resolve
+  override: 
+  - mvn -s settings.xml dependency:resolve
 test:
  override:
   - mvn -s settings.xml clean test
