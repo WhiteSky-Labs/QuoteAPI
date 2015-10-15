@@ -1,6 +1,3 @@
-machine:
-  java: oraclejdk7
-  
 test:
  override:
-  - mvn clean test  
+  - mvn clean test
