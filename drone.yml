@@ -1,0 +1,2 @@
+script:
+ - mvn -s settings.xml clean test
