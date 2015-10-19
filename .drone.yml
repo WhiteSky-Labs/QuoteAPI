@@ -1,2 +1,3 @@
+image: oraclejdk7
 script:
  - mvn -s settings.xml clean test
