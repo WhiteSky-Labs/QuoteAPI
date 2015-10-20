@@ -67,7 +67,6 @@ public class QuoteServiceImplTest {
     }
     
     @Test
-    
     public void sampleTest() throws Exception {
         assertTrue(false);
     }
