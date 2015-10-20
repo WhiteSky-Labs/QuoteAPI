@@ -65,6 +65,12 @@ public class QuoteServiceImplTest {
         assertEquals("sample", impl.performQuoteActivity(quoteActivityInfo).getQuote().getQuoteText());
 
     }
+    
+    @Test
+    
+    public void sampleTest() throws Exception {
+        assertTrue(false);
+    }
 
     @Test
     public void validPerformActivityDecompress() throws Exception {
